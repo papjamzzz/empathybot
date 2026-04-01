@@ -13,7 +13,7 @@ Empathetic AI chatbot for grief, illness, and trauma support. Single Claude mode
 ✅ V1 complete — fully functional, ready to test and push to GitHub
 
 ## Stack
-- Python + Flask, port 5563, host 127.0.0.1
+- Python + Flask, port 5564, host 127.0.0.1
 - Anthropic SDK (claude-sonnet-4-6) — streaming responses via SSE
 - Dark theme, Inter font, CSS variables, purple/lavender accent (#b794f4)
 - Logo at /static/logo.png
