@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EmpathyBot</title>
+  <title>Cognitive Empathies</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -18,7 +18,7 @@
       --accent:  #b794f4;
       --accent2: #9f7aea;
       --warm:    #fbb6ce;
-      --teal:    #81e6d9;
+      --gold:    #f6ad55;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,13 +33,12 @@
     }
 
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
 
     /* ── HEADER ── */
     .header {
       background: linear-gradient(180deg, #0e1020 0%, #08090d 100%);
-      border-bottom: 1px solid rgba(183,148,244,0.12);
+      border-bottom: 1px solid rgba(183,148,244,0.1);
       padding: 13px 28px;
       display: flex;
       align-items: center;
@@ -47,14 +46,13 @@
       position: sticky;
       top: 0;
       z-index: 200;
-      backdrop-filter: blur(20px);
       flex-shrink: 0;
     }
     .header::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(183,148,244,0.5), transparent);
+      background: linear-gradient(90deg, transparent, rgba(183,148,244,0.4), transparent);
     }
     .brand {
       display: flex;
@@ -71,6 +69,14 @@
       letter-spacing: -0.02em;
       color: var(--accent);
     }
+    .brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 1px;
+    }
     .header-right {
       display: flex;
       align-items: center;
@@ -79,7 +85,7 @@
     .support-badge {
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--dim);
       background: var(--card);
@@ -107,11 +113,7 @@
     .btn-restart:hover { color: var(--text); border-color: var(--muted); }
 
     /* ── SCREENS ── */
-    .screen {
-      display: none;
-      flex: 1;
-      flex-direction: column;
-    }
+    .screen { display: none; flex: 1; flex-direction: column; }
     .screen.active { display: flex; }
 
     /* ── SELECT SCREEN ── */
@@ -126,7 +128,7 @@
       margin-bottom: 40px;
     }
     .select-hero h1 {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       letter-spacing: -0.03em;
       color: var(--text);
@@ -141,7 +143,7 @@
     }
     .support-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
       gap: 12px;
       max-width: 760px;
       width: 100%;
@@ -153,282 +155,178 @@
       padding: 18px 20px;
       cursor: pointer;
       transition: all 0.2s;
-      text-align: left;
     }
     .support-card:hover {
       border-color: var(--accent);
       background: var(--card2);
       transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(183,148,244,0.12);
+      box-shadow: 0 4px 20px rgba(183,148,244,0.1);
     }
-    .support-card .icon {
-      font-size: 24px;
-      margin-bottom: 10px;
-      display: block;
-    }
-    .support-card .label {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-    .support-card .desc {
-      font-size: 12px;
-      color: var(--dim);
-      line-height: 1.4;
-    }
+    .support-card .icon { font-size: 22px; margin-bottom: 10px; display: block; }
+    .support-card .label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .support-card .desc { font-size: 11px; color: var(--dim); line-height: 1.4; }
 
-    /* ── COACH SCREEN ── */
-    #screen-coach {
+    /* ── VOICE SCREEN ── */
+    #screen-voice {
       align-items: center;
       justify-content: center;
-      padding: 48px 24px 80px;
+      flex-direction: column;
+      gap: 0;
+      padding: 0 24px 60px;
     }
-    .coach-box {
-      max-width: 560px;
-      width: 100%;
-    }
-    .coach-back {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--dim);
-      cursor: pointer;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
-    }
-    .coach-back:hover { color: var(--text); }
-    .coach-hero {
-      margin-bottom: 28px;
-    }
-    .coach-hero .selected-type {
-      font-size: 13px;
+
+    .voice-support-label {
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 10px;
+      margin-bottom: 40px;
+      opacity: 0.7;
     }
-    .coach-hero h2 {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      margin-bottom: 10px;
-    }
-    .coach-hero p {
-      font-size: 14px;
-      color: var(--dim);
-      line-height: 1.6;
-    }
-    .coach-examples {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 16px 0 20px;
-    }
-    .coach-chip {
-      font-size: 12px;
-      color: var(--dim);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 5px 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .coach-chip:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-    .coach-textarea {
-      width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-      padding: 16px;
-      resize: none;
-      height: 120px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .coach-textarea:focus { border-color: var(--accent); }
-    .coach-textarea::placeholder { color: var(--dim); }
-    .coach-actions {
+
+    /* Orb */
+    .orb-wrap {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-top: 16px;
+      justify-content: center;
+      margin-bottom: 44px;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: #0a0012;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 28px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-primary:hover {
-      background: var(--accent2);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(183,148,244,0.3);
-    }
-    .btn-skip {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--dim);
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: color 0.2s;
-      padding: 12px 8px;
-    }
-    .btn-skip:hover { color: var(--text); }
-
-    /* ── CHAT SCREEN ── */
-    #screen-chat {
-      flex-direction: column;
-      height: calc(100vh - 57px);
-    }
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 28px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 720px;
-      width: 100%;
-      margin: 0 auto;
-    }
-    .message {
-      display: flex;
-      flex-direction: column;
-      max-width: 82%;
-    }
-    .message.bot { align-self: flex-start; }
-    .message.user { align-self: flex-end; }
-    .message-bubble {
-      padding: 14px 18px;
-      border-radius: 16px;
-      font-size: 15px;
-      line-height: 1.65;
-    }
-    .message.bot .message-bubble {
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-      color: var(--text);
-    }
-    .message.user .message-bubble {
-      background: linear-gradient(135deg, #6b46c1, #805ad5);
-      border-bottom-right-radius: 4px;
-      color: #fff;
-    }
-    .message-time {
-      font-size: 10px;
-      color: var(--dim);
-      margin-top: 5px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-    }
-    .message.user .message-time { text-align: right; }
-
-    /* typing indicator */
-    .typing-indicator {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 14px 18px;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
-      width: fit-content;
-    }
-    .typing-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--dim);
+    .orb-ring {
+      position: absolute;
       border-radius: 50%;
-      animation: bounce 1.2s ease-in-out infinite;
+      border: 1px solid rgba(183,148,244,0.15);
+      animation: ring-pulse 3s ease-in-out infinite;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce {
-      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-      40% { transform: translateY(-6px); opacity: 1; }
+    .orb-ring:nth-child(1) { width: 180px; height: 180px; animation-delay: 0s; }
+    .orb-ring:nth-child(2) { width: 220px; height: 220px; animation-delay: 0.6s; opacity: 0.6; }
+    .orb-ring:nth-child(3) { width: 260px; height: 260px; animation-delay: 1.2s; opacity: 0.3; }
+    @keyframes ring-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(1.04); opacity: 0.8; }
+    }
+    .orb-ring.listening { border-color: rgba(183,148,244,0.6); animation: ring-listen 0.8s ease-in-out infinite; }
+    .orb-ring.listening:nth-child(2) { animation-delay: 0.15s; }
+    .orb-ring.listening:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes ring-listen {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .orb-ring.speaking { border-color: rgba(246,173,85,0.5); animation: ring-speak 0.5s ease-in-out infinite; }
+    .orb-ring.speaking:nth-child(2) { animation-delay: 0.1s; }
+    .orb-ring.speaking:nth-child(3) { animation-delay: 0.2s; }
+    @keyframes ring-speak {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
     }
 
-    /* chat input */
-    .chat-input-area {
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      padding: 16px 24px 20px;
-      flex-shrink: 0;
-    }
-    .chat-input-inner {
-      max-width: 720px;
-      margin: 0 auto;
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-    .chat-input {
-      flex: 1;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      padding: 12px 16px;
-      resize: none;
-      outline: none;
-      transition: border-color 0.2s;
-      max-height: 160px;
-      min-height: 46px;
-    }
-    .chat-input:focus { border-color: rgba(183,148,244,0.4); }
-    .chat-input::placeholder { color: var(--dim); }
-    .btn-send {
-      background: var(--accent);
+    .mic-btn {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
       border: none;
-      border-radius: 10px;
-      width: 46px;
-      height: 46px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      color: #0a0012;
+      position: relative;
+      z-index: 1;
+      transition: all 0.25s;
+      background: radial-gradient(circle at 35% 35%, #1e1635, #0d0f1a);
+      box-shadow:
+        0 0 0 1px rgba(183,148,244,0.2),
+        0 0 30px rgba(183,148,244,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.05);
     }
-    .btn-send:hover { background: var(--accent2); transform: scale(1.05); }
-    .btn-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-    .btn-send svg { width: 18px; height: 18px; }
+    .mic-btn:hover {
+      box-shadow:
+        0 0 0 1px rgba(183,148,244,0.4),
+        0 0 40px rgba(183,148,244,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      transform: scale(1.03);
+    }
+    .mic-btn.listening {
+      background: radial-gradient(circle at 35% 35%, #2d1f50, #1a1030);
+      box-shadow:
+        0 0 0 2px rgba(183,148,244,0.6),
+        0 0 50px rgba(183,148,244,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .mic-btn.speaking {
+      background: radial-gradient(circle at 35% 35%, #2d1f0a, #1a1205);
+      box-shadow:
+        0 0 0 2px rgba(246,173,85,0.5),
+        0 0 50px rgba(246,173,85,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      cursor: default;
+    }
+    .mic-btn.processing { cursor: default; opacity: 0.7; }
+    .mic-icon { width: 42px; height: 42px; }
+    .mic-icon path, .mic-icon rect { fill: var(--accent); transition: fill 0.2s; }
+    .mic-btn.listening .mic-icon path,
+    .mic-btn.listening .mic-icon rect { fill: #d6bcfa; }
+    .mic-btn.speaking .mic-icon path,
+    .mic-btn.speaking .mic-icon rect { fill: var(--gold); }
 
-    /* crisis banner */
+    /* Status text */
+    .voice-status {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--dim);
+      margin-bottom: 24px;
+      min-height: 22px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+    .voice-status.listening { color: var(--accent); }
+    .voice-status.speaking { color: var(--gold); }
+    .voice-status.processing { color: var(--dim); }
+
+    /* Transcript */
+    .transcript-area {
+      max-width: 560px;
+      width: 100%;
+      min-height: 80px;
+      text-align: center;
+    }
+    .transcript-user {
+      font-size: 14px;
+      color: var(--dim);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+    .transcript-reply {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    /* Hint */
+    .voice-hint {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    /* Crisis */
     .crisis-note {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
       text-align: center;
       font-size: 11px;
-      color: var(--dim);
-      padding: 8px 0 0;
-      max-width: 720px;
-      margin: 0 auto;
+      color: var(--muted);
+      padding: 10px 0 12px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
     }
-    .crisis-note a { color: var(--dim); text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -436,7 +334,10 @@
 <header class="header">
   <div class="brand">
     <img src="/static/logo.png" onerror="this.style.display='none'">
-    <div class="brand-name">EmpathyBot</div>
+    <div>
+      <div class="brand-name">Cognitive Empathies</div>
+      <div class="brand-sub">Voice Companion</div>
+    </div>
   </div>
   <div class="header-right">
     <div class="support-badge" id="support-badge"></div>
@@ -447,68 +348,57 @@
 <!-- ── SCREEN 1: Select support type ── -->
 <div class="screen active" id="screen-select">
   <div class="select-hero">
-    <h1>What brings you here <span>today?</span></h1>
-    <p>Choose what you'd like support with. This helps me show up the right way for you.</p>
+    <h1>What are you <span>carrying</span> today?</h1>
+    <p>Choose what you'd like to talk through. Your voice companion will be ready to listen.</p>
   </div>
   <div class="support-grid" id="support-grid"></div>
 </div>
 
-<!-- ── SCREEN 2: Coach the bot ── -->
-<div class="screen" id="screen-coach">
-  <div class="coach-box">
-    <div class="coach-back" onclick="goBack()">&#8592; Back</div>
-    <div class="coach-hero">
-      <div class="selected-type" id="coach-type-label"></div>
-      <h2>How do you want me to talk to you?</h2>
-      <p>You're in charge. Tell me how to show up — what helps, what doesn't, what you need right now.</p>
-    </div>
-    <div class="coach-examples">
-      <div class="coach-chip" onclick="addChip(this)">Just listen, don't advise</div>
-      <div class="coach-chip" onclick="addChip(this)">Be gentle and slow</div>
-      <div class="coach-chip" onclick="addChip(this)">Be direct, don't sugarcoat</div>
-      <div class="coach-chip" onclick="addChip(this)">Ask me questions</div>
-      <div class="coach-chip" onclick="addChip(this)">Keep responses short</div>
-      <div class="coach-chip" onclick="addChip(this)">You can use some humor</div>
-      <div class="coach-chip" onclick="addChip(this)">Don't tell me it'll be okay</div>
-      <div class="coach-chip" onclick="addChip(this)">Check in with me often</div>
-    </div>
-    <textarea class="coach-textarea" id="coach-input" placeholder="e.g. Be gentle. Don't give me advice unless I ask. I just need to feel heard right now."></textarea>
-    <div class="coach-actions">
-      <button class="btn-primary" onclick="startChat()">Begin</button>
-      <button class="btn-skip" onclick="startChat(true)">Skip — just start talking</button>
-    </div>
+<!-- ── SCREEN 2: Voice ── -->
+<div class="screen" id="screen-voice">
+  <div class="voice-support-label" id="voice-type-label"></div>
+
+  <div class="orb-wrap">
+    <div class="orb-ring" id="ring1"></div>
+    <div class="orb-ring" id="ring2"></div>
+    <div class="orb-ring" id="ring3"></div>
+    <button class="mic-btn" id="mic-btn" onclick="handleMic()">
+      <svg class="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="9" y="2" width="6" height="11" rx="3"/>
+        <path d="M5 10a7 7 0 0 0 14 0M12 19v3M8 22h8"/>
+        <style>rect,path{stroke:none;}</style>
+      </svg>
+    </button>
   </div>
+
+  <div class="voice-status" id="voice-status">Tap to speak</div>
+
+  <div class="transcript-area">
+    <div class="transcript-user" id="transcript-user"></div>
+    <div class="transcript-reply" id="transcript-reply"></div>
+  </div>
+
+  <div class="voice-hint" id="voice-hint">Tap mic to talk · Tap again to stop</div>
 </div>
 
-<!-- ── SCREEN 3: Chat ── -->
-<div class="screen" id="screen-chat">
-  <div class="chat-messages" id="chat-messages"></div>
-  <div class="chat-input-area">
-    <div class="chat-input-inner">
-      <textarea class="chat-input" id="chat-input" placeholder="Say whatever's on your mind…" rows="1"></textarea>
-      <button class="btn-send" id="btn-send" onclick="sendMessage()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
-      </button>
-    </div>
-    <div class="crisis-note">
-      If you're in crisis, please reach out to the <a href="#" onclick="return false">988 Suicide & Crisis Lifeline</a> — call or text <strong>988</strong>.
-    </div>
-  </div>
+<div class="crisis-note">
+  In crisis? Call or text <strong>988</strong> — Suicide & Crisis Lifeline, available 24/7.
 </div>
 
 <script>
   let state = {
     supportType: null,
     supportLabel: null,
-    coaching: '',
     messages: [],
-    streaming: false,
+    mediaRecorder: null,
+    audioChunks: [],
+    isListening: false,
+    isSpeaking: false,
+    isProcessing: false,
+    currentAudio: null,
   };
 
-  // ── Load support types ──────────────────────────────────────────────────────
+  // ── Load support types ─────────────────────────────────────────────────────
   async function loadSupportTypes() {
     const res = await fetch('/api/support-types');
     const types = await res.json();
@@ -516,11 +406,7 @@
     types.forEach(t => {
       const card = document.createElement('div');
       card.className = 'support-card';
-      card.innerHTML = `
-        <span class="icon">${t.icon}</span>
-        <div class="label">${t.label}</div>
-        <div class="desc">${t.desc}</div>
-      `;
+      card.innerHTML = `<span class="icon">${t.icon}</span><div class="label">${t.label}</div><div class="desc">${t.desc}</div>`;
       card.onclick = () => selectType(t.id, t.label, t.icon);
       grid.appendChild(card);
     });
@@ -529,217 +415,222 @@
   function selectType(id, label, icon) {
     state.supportType = id;
     state.supportLabel = label;
-    document.getElementById('coach-type-label').textContent = `${icon}  ${label}`;
-    showScreen('screen-coach');
-  }
-
-  // ── Coach chips ─────────────────────────────────────────────────────────────
-  function addChip(el) {
-    const ta = document.getElementById('coach-input');
-    const chip = el.textContent.trim();
-    const current = ta.value.trim();
-    ta.value = current ? current + '. ' + chip : chip;
-    el.style.color = 'var(--accent)';
-    el.style.borderColor = 'var(--accent)';
-    el.onclick = null;
-  }
-
-  function goBack() {
-    showScreen('screen-select');
-  }
-
-  // ── Start chat ──────────────────────────────────────────────────────────────
-  function startChat(skip = false) {
-    state.coaching = skip ? '' : document.getElementById('coach-input').value.trim();
-    state.messages = [];
-
-    document.getElementById('support-badge').textContent = state.supportLabel;
+    document.getElementById('voice-type-label').textContent = `${icon}  ${label}`;
+    document.getElementById('support-badge').textContent = label;
     document.getElementById('support-badge').classList.add('visible');
     document.getElementById('btn-restart').classList.add('visible');
-
-    showScreen('screen-chat');
-
-    // Opening message from bot
-    const opener = getOpener(state.supportType);
-    appendMessage('bot', opener);
-    state.messages.push({ role: 'assistant', content: opener });
-
-    document.getElementById('chat-input').focus();
+    showScreen('screen-voice');
+    speakOpener(id);
   }
 
+  // ── Openers ────────────────────────────────────────────────────────────────
   function getOpener(type) {
     const openers = {
-      grief:        "I'm here with you. There's no rush, no agenda — just space for whatever you're carrying right now. Want to start wherever feels right?",
-      illness:      "Living with this every day takes so much. I'm not going anywhere — take whatever time you need. What's been weighing on you most lately?",
-      trauma:       "You don't have to explain anything you're not ready to. I'm just here, and we can go as slowly as you need. What feels okay to share?",
-      anxiety:      "I hear you. Whatever's swirling around in your head — you can let some of it out here. What's been the loudest thing lately?",
-      relationship: "Relationship pain cuts deep. I'm here, and you don't have to make it make sense right away. What's been going on?",
-      loneliness:   "I'm glad you're here. Loneliness is one of the heaviest things to carry quietly. You don't have to carry it alone right now — what's been going on?",
-      caregiver:    "First — how are *you* doing? Not the person you're caring for. You. When did you last get to just… exhale?",
-      depression:   "I'm here. You don't have to be okay, and you don't have to explain yourself. Just start wherever you are — even if it's just one word.",
-      transition:   "Change is hard even when it's the right change — and sometimes especially then. What are you in the middle of right now?",
-      health_fear:  "Medical stuff is scary, and the not-knowing is its own kind of hard. I'm here — what's been on your mind?",
-      addiction:    "You came here, and that means something. However today has gone — I'm not judging it. What's been happening?",
-      self_worth:   "You reached out. That matters more than you know. I'm here, and I want to understand — what's been making you feel this way?",
+      grief:        "I'm here with you. Take whatever time you need — there's no rush. What would you like to share?",
+      illness:      "Living with this every day takes so much. I'm not going anywhere. What's been weighing on you most?",
+      trauma:       "You don't have to explain anything you're not ready to. We can go as slowly as you need. What feels okay to share?",
+      anxiety:      "Whatever's swirling around right now — you can let some of it out here. What's been the loudest thing lately?",
+      relationship: "Relationship pain cuts deep. You don't have to make it make sense right away. What's been going on?",
+      loneliness:   "I'm glad you're here. You don't have to carry this alone right now. What's been going on?",
+      caregiver:    "How are you doing? Not the person you're caring for — you. When did you last get to just breathe?",
+      depression:   "I'm here. You don't have to be okay. Just start wherever you are — even one word is fine.",
+      transition:   "Change is hard, even when it's the right kind. What are you in the middle of right now?",
+      health_fear:  "Medical stuff is scary, and the not-knowing is its own kind of hard. What's been on your mind?",
+      addiction:    "You reached out, and that means something. However today has gone — I'm not judging it. What's been happening?",
+      self_worth:   "You're here, and that matters. I want to understand what's been making you feel this way.",
     };
-    return openers[type] || "I'm here with you. Take whatever time you need — what's on your mind?";
+    return openers[type] || "I'm here with you. What's on your mind?";
   }
 
-  // ── Messaging ───────────────────────────────────────────────────────────────
-  function appendMessage(role, text) {
-    const container = document.getElementById('chat-messages');
-    const wrap = document.createElement('div');
-    wrap.className = `message ${role}`;
-
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    wrap.innerHTML = `
-      <div class="message-bubble">${escapeHtml(text)}</div>
-      <div class="message-time">${timeStr}</div>
-    `;
-    container.appendChild(wrap);
-    container.scrollTop = container.scrollHeight;
-    return wrap.querySelector('.message-bubble');
+  async function speakOpener(type) {
+    const text = getOpener(type);
+    state.messages.push({ role: 'assistant', content: text });
+    showReply(text);
+    await speakText(text);
   }
 
-  function appendTyping() {
-    const container = document.getElementById('chat-messages');
-    const wrap = document.createElement('div');
-    wrap.className = 'message bot';
-    wrap.id = 'typing-wrap';
-    wrap.innerHTML = `
-      <div class="typing-indicator">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    `;
-    container.appendChild(wrap);
-    container.scrollTop = container.scrollHeight;
-    return wrap;
+  // ── Mic handling ───────────────────────────────────────────────────────────
+  function handleMic() {
+    if (state.isProcessing || state.isSpeaking) return;
+    if (state.isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
   }
 
-  function escapeHtml(str) {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>');
+  async function startListening() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      state.audioChunks = [];
+      state.mediaRecorder = new MediaRecorder(stream);
+      state.mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) state.audioChunks.push(e.data);
+      };
+      state.mediaRecorder.onstop = processAudio;
+      state.mediaRecorder.start();
+      state.isListening = true;
+      setUIState('listening');
+    } catch (err) {
+      setStatus('Microphone access denied');
+    }
   }
 
-  async function sendMessage() {
-    if (state.streaming) return;
-    const input = document.getElementById('chat-input');
-    const text = input.value.trim();
-    if (!text) return;
+  function stopListening() {
+    if (state.mediaRecorder && state.isListening) {
+      state.mediaRecorder.stop();
+      state.mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      state.isListening = false;
+      setUIState('processing');
+    }
+  }
 
-    input.value = '';
-    input.style.height = 'auto';
-    appendMessage('user', text);
-    state.messages.push({ role: 'user', content: text });
-
-    const btn = document.getElementById('btn-send');
-    btn.disabled = true;
-    state.streaming = true;
-
-    const typingWrap = appendTyping();
-    const container = document.getElementById('chat-messages');
+  async function processAudio() {
+    const blob = new Blob(state.audioChunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('audio', blob, 'recording.webm');
 
     try {
-      const res = await fetch('/api/chat', {
+      // 1. Transcribe
+      setStatus('Listening...');
+      const transcribeRes = await fetch('/api/transcribe', { method: 'POST', body: formData });
+      const { text: userText } = await transcribeRes.json();
+
+      if (!userText || userText.trim() === '') {
+        setUIState('idle');
+        return;
+      }
+
+      showUserText(userText);
+      state.messages.push({ role: 'user', content: userText });
+
+      // 2. Get reply
+      setStatus('Thinking...');
+      const chatRes = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: state.messages,
           support_type: state.supportType,
-          coaching: state.coaching,
+          coaching: '',
         }),
       });
+      const { text: replyText } = await chatRes.json();
+      state.messages.push({ role: 'assistant', content: replyText });
+      showReply(replyText);
 
-      typingWrap.remove();
-
-      // Create bot bubble for streaming
-      const botWrap = document.createElement('div');
-      botWrap.className = 'message bot';
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      botWrap.innerHTML = `<div class="message-bubble"></div><div class="message-time">${timeStr}</div>`;
-      container.appendChild(botWrap);
-      const bubble = botWrap.querySelector('.message-bubble');
-
-      let fullText = '';
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') break;
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.text) {
-                fullText += parsed.text;
-                bubble.innerHTML = escapeHtml(fullText);
-                container.scrollTop = container.scrollHeight;
-              }
-            } catch (e) {}
-          }
-        }
-      }
-
-      state.messages.push({ role: 'assistant', content: fullText });
+      // 3. Speak reply
+      await speakText(replyText);
 
     } catch (err) {
-      typingWrap.remove();
-      appendMessage('bot', 'Something went wrong on my end. Give me a moment and try again.');
+      setStatus('Something went wrong. Tap to try again.');
+      setUIState('idle');
     }
-
-    state.streaming = false;
-    btn.disabled = false;
-    input.focus();
   }
 
-  // ── Screens ─────────────────────────────────────────────────────────────────
+  // ── ElevenLabs TTS ─────────────────────────────────────────────────────────
+  async function speakText(text) {
+    setUIState('speaking');
+    setStatus('Speaking...');
+
+    try {
+      const res = await fetch('/api/speak', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!res.ok) throw new Error('TTS failed');
+
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      state.currentAudio = audio;
+
+      await new Promise(resolve => {
+        audio.onended = resolve;
+        audio.onerror = resolve;
+        audio.play();
+      });
+
+      URL.revokeObjectURL(audioUrl);
+    } catch (err) {
+      console.error('TTS error:', err);
+    }
+
+    setUIState('idle');
+  }
+
+  // ── UI helpers ─────────────────────────────────────────────────────────────
+  function setUIState(s) {
+    const btn = document.getElementById('mic-btn');
+    const rings = [document.getElementById('ring1'), document.getElementById('ring2'), document.getElementById('ring3')];
+    const statusEl = document.getElementById('voice-status');
+    const hint = document.getElementById('voice-hint');
+
+    btn.className = 'mic-btn';
+    rings.forEach(r => r.className = 'orb-ring');
+    statusEl.className = 'voice-status';
+
+    state.isProcessing = false;
+    state.isSpeaking = false;
+
+    if (s === 'listening') {
+      btn.classList.add('listening');
+      rings.forEach(r => r.classList.add('listening'));
+      statusEl.classList.add('listening');
+      statusEl.textContent = 'Listening...';
+      hint.textContent = 'Tap mic to stop';
+    } else if (s === 'speaking') {
+      btn.classList.add('speaking');
+      rings.forEach(r => r.classList.add('speaking'));
+      statusEl.classList.add('speaking');
+      statusEl.textContent = 'Speaking...';
+      hint.textContent = '';
+      state.isSpeaking = true;
+    } else if (s === 'processing') {
+      btn.classList.add('processing');
+      statusEl.classList.add('processing');
+      statusEl.textContent = 'Processing...';
+      hint.textContent = '';
+      state.isProcessing = true;
+    } else {
+      statusEl.textContent = 'Tap to speak';
+      hint.textContent = 'Tap mic to talk · Tap again to stop';
+    }
+  }
+
+  function setStatus(msg) {
+    document.getElementById('voice-status').textContent = msg;
+  }
+
+  function showUserText(text) {
+    document.getElementById('transcript-user').textContent = `"${text}"`;
+    document.getElementById('transcript-reply').textContent = '';
+  }
+
+  function showReply(text) {
+    document.getElementById('transcript-reply').textContent = text;
+  }
+
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
   function restart() {
-    state = { supportType: null, supportLabel: null, coaching: '', messages: [], streaming: false };
+    if (state.currentAudio) { state.currentAudio.pause(); state.currentAudio = null; }
+    if (state.mediaRecorder && state.isListening) stopListening();
+    state = { supportType: null, supportLabel: null, messages: [], mediaRecorder: null, audioChunks: [], isListening: false, isSpeaking: false, isProcessing: false, currentAudio: null };
     document.getElementById('support-badge').classList.remove('visible');
     document.getElementById('btn-restart').classList.remove('visible');
-    document.getElementById('coach-input').value = '';
-    document.getElementById('chat-messages').innerHTML = '';
-    // Reset chips
-    document.querySelectorAll('.coach-chip').forEach(c => {
-      c.style.color = '';
-      c.style.borderColor = '';
-      c.onclick = () => addChip(c);
-    });
+    document.getElementById('transcript-user').textContent = '';
+    document.getElementById('transcript-reply').textContent = '';
+    setUIState('idle');
     showScreen('screen-select');
   }
 
-  // ── Auto-resize textarea ─────────────────────────────────────────────────────
-  const chatInput = document.getElementById('chat-input');
-  chatInput.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
-  });
-  chatInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-
-  // ── Init ─────────────────────────────────────────────────────────────────────
+  // ── Init ───────────────────────────────────────────────────────────────────
   loadSupportTypes();
 </script>
 

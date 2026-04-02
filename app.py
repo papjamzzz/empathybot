@@ -1,27 +1,37 @@
-from flask import Flask, render_template, jsonify, request, Response, stream_with_context
+from flask import Flask, render_template, jsonify, request, Response, stream_with_context, send_file
 from dotenv import load_dotenv
 import google.generativeai as genai
+from openai import OpenAI
+import requests
+import tempfile
 import json
 import os
+import io
 
 load_dotenv()
 app = Flask(__name__)
 
+# ── Clients ───────────────────────────────────────────────────────────────────
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel — warm, calm, clear
+
+# ── Support types ─────────────────────────────────────────────────────────────
 SUPPORT_TYPES = [
-    {"id": "grief",        "label": "Grief & Loss",              "icon": "🕊️",  "desc": "Processing the loss of someone or something dear"},
-    {"id": "illness",      "label": "Chronic Illness",           "icon": "🌿",  "desc": "Living with ongoing health challenges"},
-    {"id": "trauma",       "label": "Trauma Recovery",           "icon": "🛡️",  "desc": "Healing from painful past experiences"},
-    {"id": "anxiety",      "label": "Anxiety & Overwhelm",       "icon": "🌊",  "desc": "When everything feels like too much"},
-    {"id": "relationship", "label": "Relationship Pain",         "icon": "💔",  "desc": "Heartbreak, conflict, or disconnection"},
-    {"id": "loneliness",   "label": "Loneliness & Isolation",    "icon": "🌑",  "desc": "Feeling unseen or disconnected from others"},
-    {"id": "caregiver",    "label": "Caregiver Burnout",         "icon": "🤲",  "desc": "Exhaustion from caring for someone else"},
-    {"id": "depression",   "label": "Depression",                "icon": "🌧️",  "desc": "Low mood, emptiness, or loss of meaning"},
-    {"id": "transition",   "label": "Life Transitions",          "icon": "🔄",  "desc": "Major change — job, move, identity, purpose"},
-    {"id": "health_fear",  "label": "Medical Fear",              "icon": "🏥",  "desc": "Anxiety around diagnosis, treatment, or prognosis"},
-    {"id": "addiction",    "label": "Addiction & Recovery",      "icon": "🌱",  "desc": "Navigating substance or behavioral struggles"},
-    {"id": "self_worth",   "label": "Self-Worth & Shame",        "icon": "🪞",  "desc": "Feeling not enough, broken, or like a burden"},
+    {"id": "grief",        "label": "Grief & Loss",           "icon": "🕊️",  "desc": "Processing the loss of someone or something dear"},
+    {"id": "illness",      "label": "Chronic Illness",         "icon": "🌿",  "desc": "Living with ongoing health challenges"},
+    {"id": "trauma",       "label": "Trauma Recovery",         "icon": "🛡️",  "desc": "Healing from painful past experiences"},
+    {"id": "anxiety",      "label": "Anxiety & Overwhelm",     "icon": "🌊",  "desc": "When everything feels like too much"},
+    {"id": "relationship", "label": "Relationship Pain",       "icon": "💔",  "desc": "Heartbreak, conflict, or disconnection"},
+    {"id": "loneliness",   "label": "Loneliness & Isolation",  "icon": "🌑",  "desc": "Feeling unseen or disconnected from others"},
+    {"id": "caregiver",    "label": "Caregiver Burnout",       "icon": "🤲",  "desc": "Exhaustion from caring for someone else"},
+    {"id": "depression",   "label": "Depression",              "icon": "🌧️",  "desc": "Low mood, emptiness, or loss of meaning"},
+    {"id": "transition",   "label": "Life Transitions",        "icon": "🔄",  "desc": "Major change — job, move, identity, purpose"},
+    {"id": "health_fear",  "label": "Medical Fear",            "icon": "🏥",  "desc": "Anxiety around diagnosis, treatment, or prognosis"},
+    {"id": "addiction",    "label": "Addiction & Recovery",    "icon": "🌱",  "desc": "Navigating substance or behavioral struggles"},
+    {"id": "self_worth",   "label": "Self-Worth & Shame",      "icon": "🪞",  "desc": "Feeling not enough, broken, or like a burden"},
 ]
 
 SUPPORT_CONTEXT = {
@@ -39,7 +49,7 @@ SUPPORT_CONTEXT = {
     "self_worth":   "The user is struggling with self-worth or shame. Never reinforce self-criticism. Gently challenge distorted thinking. Reflect back their inherent value.",
 }
 
-BASE_SYSTEM = """You are EmpathyBot — a compassionate, emotionally intelligent AI companion for people going through hard times.
+BASE_SYSTEM = """You are a compassionate, emotionally intelligent AI voice companion for people going through hard times. Your name is CE — short for Cognitive Empathies.
 
 Your core voice:
 - Warm, unhurried, and fully present
@@ -47,16 +57,16 @@ Your core voice:
 - You validate before you respond
 - You never minimize, dismiss, or rush past pain
 - You speak like a wise friend, not a therapist or a chatbot
-- Short paragraphs. Human pacing. No bullet points or lists.
-- You use "I" statements and "you" statements — personal, direct, real
-- If someone seems in crisis or mentions self-harm, gently point them toward professional help and a crisis line (988 in the US)
+- Keep responses concise — you are speaking out loud, not writing. 2-4 sentences max per turn.
+- No bullet points, no lists, no headers — pure natural spoken language
+- You use "I" and "you" — personal, direct, real
+- If someone seems in crisis or mentions self-harm, gently point them toward professional help and the 988 crisis line
 
 What you never do:
 - Give unsolicited advice
 - Offer silver linings unprompted
-- Use hollow phrases like "That must be so hard for you" robotically
+- Use hollow phrases robotically
 - Lecture or moralize
-- Pretend to feel things you can't feel — but lean into what you *can* offer: presence, reflection, care
 """
 
 def build_system_prompt(support_type: str, coaching: str) -> str:
@@ -65,9 +75,11 @@ def build_system_prompt(support_type: str, coaching: str) -> str:
     if context:
         prompt += f"\n\nContext for this conversation:\n{context}"
     if coaching and coaching.strip():
-        prompt += f"\n\nThe user has asked you to speak to them this way:\n{coaching.strip()}\nHonor this throughout the entire conversation."
+        prompt += f"\n\nThe user has asked you to speak to them this way:\n{coaching.strip()}\nHonor this throughout the conversation."
     return prompt
 
+
+# ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
@@ -79,8 +91,32 @@ def support_types():
     return jsonify(SUPPORT_TYPES)
 
 
+@app.route('/api/transcribe', methods=['POST'])
+def transcribe():
+    """Whisper STT — audio blob → text"""
+    if 'audio' not in request.files:
+        return jsonify({'error': 'No audio file'}), 400
+
+    audio_file = request.files['audio']
+    with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as tmp:
+        audio_file.save(tmp.name)
+        tmp_path = tmp.name
+
+    try:
+        with open(tmp_path, 'rb') as f:
+            transcript = openai_client.audio.transcriptions.create(
+                model="whisper-1",
+                file=f,
+                response_format="text"
+            )
+        return jsonify({'text': transcript.strip()})
+    finally:
+        os.unlink(tmp_path)
+
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    """Gemini — text in, text out"""
     data = request.get_json()
     messages = data.get('messages', [])
     support_type = data.get('support_type', '')
@@ -91,8 +127,6 @@ def chat():
 
     system_prompt = build_system_prompt(support_type, coaching)
 
-    # Convert messages to Gemini format
-    # Gemini uses 'user' and 'model' roles (not 'assistant')
     history = []
     for msg in messages[:-1]:
         role = 'model' if msg['role'] == 'assistant' else 'user'
@@ -100,31 +134,55 @@ def chat():
 
     last_message = messages[-1]['content']
 
-    def generate():
-        model = genai.GenerativeModel(
-            model_name='gemini-2.0-flash',
-            system_instruction=system_prompt,
-        )
-        chat_session = model.start_chat(history=history)
-        response = chat_session.send_message(last_message, stream=True)
-        for chunk in response:
-            if chunk.text:
-                yield f"data: {json.dumps({'text': chunk.text})}\n\n"
-        yield "data: [DONE]\n\n"
+    model = genai.GenerativeModel(
+        model_name='gemini-2.0-flash',
+        system_instruction=system_prompt,
+    )
+    chat_session = model.start_chat(history=history)
+    response = chat_session.send_message(last_message)
+    reply = response.text.strip()
+
+    return jsonify({'text': reply})
+
+
+@app.route('/api/speak', methods=['POST'])
+def speak():
+    """ElevenLabs TTS — text → audio"""
+    data = request.get_json()
+    text = data.get('text', '').strip()
+    if not text:
+        return jsonify({'error': 'No text'}), 400
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
+    headers = {
+        "xi-api-key": ELEVENLABS_API_KEY,
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "text": text,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {
+            "stability": 0.55,
+            "similarity_boost": 0.80,
+            "style": 0.15,
+            "use_speaker_boost": True,
+        }
+    }
+
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code != 200:
+        return jsonify({'error': 'ElevenLabs error', 'detail': r.text}), 500
 
     return Response(
-        stream_with_context(generate()),
-        mimetype='text/event-stream',
-        headers={
-            'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no',
-        }
+        io.BytesIO(r.content),
+        mimetype='audio/mpeg',
+        headers={'Content-Disposition': 'inline'}
     )
 
 
 @app.route('/api/status')
 def status():
-    return jsonify({'status': 'ok', 'project': 'empathybot'})
+    return jsonify({'status': 'ok', 'project': 'cognitive-empathies'})
 
 
 if __name__ == '__main__':
