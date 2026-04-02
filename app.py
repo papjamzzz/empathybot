@@ -1,13 +1,13 @@
 from flask import Flask, render_template, jsonify, request, Response, stream_with_context
 from dotenv import load_dotenv
-import anthropic
+import google.generativeai as genai
 import json
 import os
 
 load_dotenv()
 app = Flask(__name__)
 
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 SUPPORT_TYPES = [
     {"id": "grief",        "label": "Grief & Loss",              "icon": "🕊️",  "desc": "Processing the loss of someone or something dear"},
@@ -91,15 +91,25 @@ def chat():
 
     system_prompt = build_system_prompt(support_type, coaching)
 
+    # Convert messages to Gemini format
+    # Gemini uses 'user' and 'model' roles (not 'assistant')
+    history = []
+    for msg in messages[:-1]:
+        role = 'model' if msg['role'] == 'assistant' else 'user'
+        history.append({'role': role, 'parts': [msg['content']]})
+
+    last_message = messages[-1]['content']
+
     def generate():
-        with client.messages.stream(
-            model="claude-sonnet-4-6",
-            max_tokens=1024,
-            system=system_prompt,
-            messages=messages,
-        ) as stream:
-            for text in stream.text_stream:
-                yield f"data: {json.dumps({'text': text})}\n\n"
+        model = genai.GenerativeModel(
+            model_name='gemini-2.0-flash',
+            system_instruction=system_prompt,
+        )
+        chat_session = model.start_chat(history=history)
+        response = chat_session.send_message(last_message, stream=True)
+        for chunk in response:
+            if chunk.text:
+                yield f"data: {json.dumps({'text': chunk.text})}\n\n"
         yield "data: [DONE]\n\n"
 
     return Response(
