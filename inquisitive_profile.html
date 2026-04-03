@@ -1,0 +1,185 @@
+
+<style>
+  .q { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 18px 20px; margin-bottom: 12px; }
+  .q-text { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 14px; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 9px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+  .opt:hover { background: var(--color-background-tertiary); }
+  .opt.selected { border-color: var(--color-border-info); background: var(--color-background-info); }
+  .opt.selected .opt-text { color: var(--color-text-info); }
+  .opt input { margin-top: 2px; flex-shrink: 0; }
+  .opt-text { font-size: 14px; color: var(--color-text-primary); line-height: 1.4; }
+  .progress { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.2rem; }
+  .btn { background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 9px 22px; font-size: 14px; cursor: pointer; color: var(--color-text-primary); margin-top: 1rem; }
+  .btn:hover { background: var(--color-background-secondary); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .result { border-radius: var(--border-radius-lg); padding: 20px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); }
+  .pattern-label { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); display: inline-block; margin-bottom: 10px; }
+  .finding { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .finding:last-of-type { border-bottom: none; }
+  .finding-title { font-size: 14px; font-weight: 500; margin: 0 0 4px; }
+  .finding-body { font-size: 13px; color: var(--color-text-secondary); margin: 0; line-height: 1.6; }
+</style>
+
+<div style="padding: 1rem 0;" id="app"></div>
+
+<script>
+const qs = [
+  {
+    text: "When you're in a long silent sit and discomfort arises, what do you usually do?",
+    options: [
+      "Observe it until it passes on its own",
+      "Try to understand it — name it, locate it",
+      "Push through with willpower",
+      "Sometimes leave, sometimes stay — depends"
+    ]
+  },
+  {
+    text: "Your insight pattern — when do breakthroughs tend to hit you?",
+    options: [
+      "Suddenly, out of nowhere — like a switch",
+      "Slowly, over days of mulling",
+      "When someone else names it first",
+      "In motion — walking, doing something"
+    ]
+  },
+  {
+    text: "The gap between knowing what to do and actually doing it — how wide is it for you?",
+    options: [
+      "Huge — I can see it perfectly and still not move",
+      "Moderate — I usually get there eventually",
+      "Small — once I see it I act",
+      "It shifts — sometimes instant, sometimes frozen"
+    ]
+  },
+  {
+    text: "How do you relate to your own emotions day to day?",
+    options: [
+      "I observe them more than feel them — meditator's distance",
+      "I feel them intensely and it affects everything",
+      "I understand them intellectually but don't always feel them",
+      "Mixed — clarity in practice, messier in real life"
+    ]
+  },
+  {
+    text: "When life gets chaotic or money gets tight, your inner state tends to be...",
+    options: [
+      "Surprisingly calm — I've trained for this",
+      "Anxious underneath, calm on the surface",
+      "Scattered — hard to access my usual clarity",
+      "It depends on whether I've been sitting regularly"
+    ]
+  },
+  {
+    text: "The thing that most gets in your way isn't lack of knowledge — it's...",
+    options: [
+      "Initiation — starting is the hardest part",
+      "Consistency — I start but don't sustain",
+      "Belief — some part of me doesn't think it'll work",
+      "Energy — I have the vision but not always the fuel"
+    ]
+  },
+  {
+    text: "When you imagine your life working well — money stable, projects shipped — what feeling comes up?",
+    options: [
+      "Excitement, I can feel it",
+      "Skepticism — I've been here before",
+      "A quiet kind of longing",
+      "Almost uncomfortable — like it's not quite me"
+    ]
+  }
+];
+
+let cur = 0, ans = [];
+
+function render() {
+  const q = qs[cur];
+  document.getElementById('app').innerHTML = `
+    <p class="progress">Question ${cur+1} of ${qs.length}</p>
+    <div class="q">
+      <p class="q-text">${q.text}</p>
+      <div class="options">${q.options.map((o,i) => `<label class="opt" id="o${i}"><input type="radio" name="q" onchange="sel(${i})"><span class="opt-text">${o}</span></label>`).join('')}</div>
+    </div>
+    <button class="btn" id="nb" onclick="nxt()" disabled>${cur === qs.length-1 ? 'See pattern →' : 'Next →'}</button>`;
+}
+
+function sel(i) {
+  document.querySelectorAll('.opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('o'+i).classList.add('selected');
+  document.getElementById('nb').disabled = false;
+  ans[cur] = i;
+}
+
+function nxt() {
+  cur++;
+  if (cur < qs.length) render();
+  else showResult();
+}
+
+function showResult() {
+  const gapWide = ans[2] === 0 || ans[2] === 3;
+  const observerType = ans[3] === 0 || ans[3] === 2;
+  const initiationBlock = ans[5] === 0;
+  const beliefBlock = ans[5] === 2 || ans[6] === 3;
+  const calmUnder = ans[4] === 1;
+  const suddenInsight = ans[1] === 0 || ans[1] === 2;
+  const discomfortFamiliar = ans[0] === 0 || ans[0] === 1;
+
+  let findings = [];
+
+  if (discomfortFamiliar && gapWide) {
+    findings.push({
+      title: "You can sit with discomfort — but action is a different muscle",
+      body: "Meditation builds extraordinary tolerance for inner experience. But the knowing-doing gap suggests that awareness alone isn't the lever for you. The block isn't emotional ignorance — it's somewhere between perception and motion."
+    });
+  }
+
+  if (observerType && gapWide) {
+    findings.push({
+      title: "Observer mode can become a holding pattern",
+      body: "You likely process experience at a remove — which is a strength in practice. But in daily life it can mean watching yourself not do the thing, clearly, without being able to change it. High self-awareness, lower self-direction in those moments."
+    });
+  }
+
+  if (initiationBlock) {
+    findings.push({
+      title: "Starting is the actual problem — not motivation, not knowledge",
+      body: "This is specific and fixable. The resistance lives right at the threshold of beginning. Once you're in motion it likely clears. The crypto account this morning? That's a starting problem, not a doing problem."
+    });
+  }
+
+  if (beliefBlock) {
+    findings.push({
+      title: "Some part of you doesn't fully believe the good version is for you",
+      body: "This isn't dramatic — it's quiet and subtle. A version of 'things like that don't last for me' or 'I'll believe it when I see it.' Meditation can actually sharpen this pattern because you see it so clearly — without always dissolving it."
+    });
+  }
+
+  if (calmUnder) {
+    findings.push({
+      title: "Calm surface, active undercurrent",
+      body: "You've trained yourself to hold steady outwardly. That's real. But if there's anxiety running underneath it doesn't always get resolved — sometimes it just gets quieter. Worth distinguishing equanimity from suppression."
+    });
+  }
+
+  if (suddenInsight) {
+    findings.push({
+      title: "You're a pattern-recognizer who moves fast once something clicks",
+      body: "This is a genuine asset. When the frame lands, you integrate quickly. That means the right framing of a problem does more for you than more effort or more information. You don't need to be pushed — you need the right lens."
+    });
+  }
+
+  if (findings.length === 0) {
+    findings.push({ title: "Complex picture", body: "Your answers don't fall into a clean single pattern — which itself is informative. Worth a longer freeform conversation." });
+  }
+
+  document.getElementById('app').innerHTML = `
+    <div class="result">
+      <span class="pattern-label" style="background:var(--color-background-info);color:var(--color-text-info);">${findings.length} pattern${findings.length>1?'s':''} found</span>
+      ${findings.map(f => `<div class="finding"><p class="finding-title">${f.title}</p><p class="finding-body">${f.body}</p></div>`).join('')}
+      <button class="btn" style="margin-top:8px;" onclick="sendPrompt('I got these patterns from the test: ${findings.map(f=>f.title).join(' / ')}. What does this mean for the money block and how do I actually move today?')">Apply this to today ↗</button>
+    </div>`;
+}
+
+render();
+</script>

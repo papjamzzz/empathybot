@@ -4,3 +4,4 @@ requests
 google-generativeai
 openai
 elevenlabs
+gunicorn
