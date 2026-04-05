@@ -275,7 +275,7 @@
       font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;
-      color: var(--dim);
+      color: #7a80a8;
       margin-bottom: 24px;
       min-height: 22px;
       text-align: center;
@@ -283,7 +283,8 @@
     }
     .voice-status.listening { color: var(--accent); }
     .voice-status.speaking { color: var(--gold); }
-    .voice-status.processing { color: var(--dim); }
+    .voice-status.processing { color: #7a80a8; }
+    .voice-status.error { color: var(--warm); }
 
     /* Transcript */
     .transcript-area {
@@ -317,13 +318,29 @@
       text-align: center;
     }
 
+    /* Hero eyebrow + disclosure */
+    .hero-eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      opacity: 0.75;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .hero-disclosure {
+      font-size: 12px;
+      color: var(--dim);
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
     /* Crisis */
     .crisis-note {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       text-align: center;
-      font-size: 11px;
-      color: var(--muted);
+      font-size: 12px;
+      color: var(--dim);
       padding: 10px 0 12px;
       background: var(--bg);
       border-top: 1px solid var(--border);
@@ -349,8 +366,10 @@
 <!-- ── SCREEN 1: Select support type ── -->
 <div class="screen active" id="screen-select">
   <div class="select-hero">
+    <p class="hero-eyebrow">A voice companion for when life gets hard.</p>
     <h1>What are you <span>carrying</span> today?</h1>
     <p>Choose what you'd like to talk through. Your voice companion will be ready to listen.</p>
+    <p class="hero-disclosure">CE is an AI companion, not a therapist or crisis service. For emergencies, call or text 988.</p>
   </div>
   <div class="support-grid" id="support-grid"></div>
 </div>
@@ -560,6 +579,9 @@
       URL.revokeObjectURL(audioUrl);
     } catch (err) {
       console.error('TTS error:', err);
+      const statusEl = document.getElementById('voice-status');
+      statusEl.textContent = 'Audio unavailable — read the response above.';
+      statusEl.className = 'voice-status error';
     }
 
     setUIState('idle');
