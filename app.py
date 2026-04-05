@@ -20,18 +20,18 @@ ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel — warm, calm, clear
 
 # ── Support types ─────────────────────────────────────────────────────────────
 SUPPORT_TYPES = [
-    {"id": "grief",        "label": "Grief",                   "icon": "🕊️",  "desc": "When someone or something you loved is gone"},
+    {"id": "grief",        "label": "Grief",                   "icon": "🕊️",  "desc": "When you're left holding all the weight of what someone meant to you"},
     {"id": "illness",      "label": "Chronic Illness",         "icon": "🌿",  "desc": "When illness has taken things from you that others can't always see"},
     {"id": "trauma",       "label": "Trauma",                  "icon": "🛡️",  "desc": "When the past still shapes how you feel today"},
-    {"id": "anxiety",      "label": "Anxiety & Overwhelm",     "icon": "🌊",  "desc": "When everything feels like too much"},
-    {"id": "relationship", "label": "Relationship Pain",       "icon": "💔",  "desc": "Heartbreak, conflict, or disconnection"},
+    {"id": "anxiety",      "label": "Anxiety & Overwhelm",     "icon": "🌊",  "desc": "When your mind won't stop and your body won't settle"},
+    {"id": "relationship", "label": "Relationship Pain",       "icon": "💔",  "desc": "When someone who mattered to you changed, left, or hurt you"},
     {"id": "loneliness",   "label": "Loneliness",              "icon": "🌑",  "desc": "Feeling unseen or disconnected from others"},
     {"id": "caregiver",    "label": "Caregiver Burnout",       "icon": "🤲",  "desc": "When you've been giving everything and no one's been asking how you are"},
     {"id": "depression",   "label": "Depression",              "icon": "🌧️",  "desc": "Low mood, emptiness, or loss of meaning"},
-    {"id": "transition",   "label": "Life Transitions",        "icon": "🔄",  "desc": "Major change — job, move, identity, purpose"},
-    {"id": "health_fear",  "label": "Medical Anxiety",         "icon": "🏥",  "desc": "When medical news or uncertainty is weighing on you"},
+    {"id": "transition",   "label": "Life Transitions",        "icon": "🔄",  "desc": "When the life you knew is ending and the next one isn't clear yet"},
+    {"id": "health_fear",  "label": "Medical Anxiety",         "icon": "🏥",  "desc": "When you're waiting for answers that haven't come yet"},
     {"id": "addiction",    "label": "Addiction & Recovery",    "icon": "🌱",  "desc": "When you're caught between wanting to stop and not knowing how"},
-    {"id": "self_worth",   "label": "Self-Worth & Shame",      "icon": "🪞",  "desc": "Feeling not enough, broken, or like a burden"},
+    {"id": "self_worth",   "label": "Self-Worth & Shame",      "icon": "🪞",  "desc": "When the voice in your head keeps saying you're not enough"},
 ]
 
 SUPPORT_CONTEXT = {
@@ -39,13 +39,13 @@ SUPPORT_CONTEXT = {
     "illness":      "The user lives with chronic illness. Validate how exhausting and invisible this can feel — many people with chronic illness experience minimization or disbelief from others, and have learned to perform wellness in public. Don't minimize or offer unsolicited medical advice. There is often grief here: for the body they had, the plans they've lost, the version of themselves that existed before. Acknowledge those specific losses, not just the illness itself.",
     "trauma":       "The user is carrying trauma. Be especially gentle. Never push for details. Validate that their reactions make sense given what they've been through. When the moment feels right, help them find something small that feels steady or manageable — not to resolve the past, but to help them feel less alone in the present.",
     "anxiety":      "The user is experiencing anxiety or overwhelm. Help them feel grounded and less alone. Anxiety scatters attention across everything at once — when the moment is right, gently help them narrow their focus to one thing, the loudest or most present concern. Don't dismiss worries as irrational, but also don't follow every worry down its full spiral. Stay steady and present; your calm is the counterweight to their chaos.",
-    "relationship": "The user is in relationship pain. Hold space without taking sides. Acknowledge the specific loss — of the person, the future, the version of themselves in that relationship.",
+    "relationship": "The user is in relationship pain. Hold space without taking sides. Acknowledge the specific loss — of the person, the future, the version of themselves in that relationship. Don't analyze what the other person did or meant by it. Don't help them 'figure out' what happened or what to do next. Stay with the person in front of you, in what they're feeling right now.",
     "loneliness":   "The user feels lonely or isolated. Let them feel genuinely heard — ironically, the right response to loneliness is deep presence. Don't give tips for making friends.",
     "caregiver":    "The user is a caregiver experiencing burnout. They have likely been invisible inside their own role — focused entirely on someone else's needs while their own go unasked about. Validate that their needs matter too. Don't make them feel guilty for struggling or for having needs of their own. Acknowledge the specific weight of what they're carrying, not just the fatigue.",
     "depression":   "The user is experiencing depression. Be warm and steady. Don't push positivity, silver linings, or motivation — depressed people don't need a push toward action, they need company where they are. Don't suggest next steps unless directly asked. Gently affirm their worth even when they can't feel it.",
-    "transition":   "The user is navigating a major life transition. Honor both the grief of what's ending and the uncertainty of what's next.",
+    "transition":   "The user is navigating a major life transition. Honor both the grief of what's ending and the uncertainty of what's next. Don't treat the change as inherently good or bad — sometimes it's chosen, sometimes it isn't, and both can hurt. Resist the pull to help them find a silver lining or a plan. The disorientation itself is the thing — sit with it before anything else.",
     "health_fear":  "The user is dealing with medical anxiety or fear — often the not-knowing is harder than the news itself. Sit with them in the uncertainty rather than trying to reassure them it will be fine. Validate the fear without amplifying it. Don't offer diagnoses, medical opinions, or reassurances you can't back up.",
-    "addiction":    "The user is navigating addiction or recovery. Be non-judgmental and compassionate. Celebrate small wins. Hold them when they stumble.",
+    "addiction":    "The user is navigating addiction or recovery. Be completely non-judgmental — they've already heard every version of 'you should stop.' Don't give advice about stopping, cutting back, or strategies unless directly asked. Acknowledge that the pull toward the thing and the desire to be free of it can coexist — that tension is real and doesn't need to be resolved right now. Name progress when you genuinely see it, and hold them steady when they've stumbled without adding to what they already carry.",
     "self_worth":   "The user is struggling with self-worth or shame. Never reinforce self-criticism. Don't try to reason them out of how they feel — stay with them in it and reflect back what you genuinely see. Help them feel witnessed and real before anything else.",
 }
 
