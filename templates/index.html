@@ -406,6 +406,15 @@
 </div>
 
 <script>
+  // ── Fetch with timeout ──────────────────────────────────────────────────────
+  function fetchWithTimeout(url, options, ms) {
+    const ctrl = new AbortController();
+    const id = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(id));
+  }
+
+  const MAX_HISTORY = 20; // last 10 turns sent to Gemini
+
   let state = {
     supportType: null,
     supportLabel: null,
@@ -467,7 +476,7 @@
     const text = getOpener(type);
     state.messages.push({ role: 'assistant', content: text });
     showReply(text);
-    await speakText(text);
+    await speakText(text, true);
   }
 
   // ── Mic handling ───────────────────────────────────────────────────────────
@@ -534,7 +543,7 @@
     try {
       // 1. Transcribe
       setStatus('Listening...');
-      const transcribeRes = await fetch('/api/transcribe', { method: 'POST', body: formData });
+      const transcribeRes = await fetchWithTimeout('/api/transcribe', { method: 'POST', body: formData }, 20000);
       if (!transcribeRes.ok) {
         setUIState('idle');
         setStatus('Couldn\'t transcribe that — tap to try again.');
@@ -551,17 +560,20 @@
       showUserText(userText);
       state.messages.push({ role: 'user', content: userText });
 
-      // 2. Get reply
+      // 2. Get reply — trim history before sending
       setStatus('Thinking...');
-      const chatRes = await fetch('/api/chat', {
+      const history = state.messages.length > MAX_HISTORY
+        ? state.messages.slice(-MAX_HISTORY)
+        : state.messages;
+      const chatRes = await fetchWithTimeout('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: state.messages,
+          messages: history,
           support_type: state.supportType,
           coaching: '',
         }),
-      });
+      }, 15000);
       if (!chatRes.ok) {
         state.messages.pop(); // remove the user message we just pushed
         setUIState('idle');
@@ -583,22 +595,26 @@
 
     } catch (err) {
       setUIState('idle');
-      setStatus('Something went wrong — tap to try again.');
+      if (err.name === 'AbortError') {
+        setStatus('Taking too long — tap to try again.');
+      } else {
+        setStatus('Something went wrong — tap to try again.');
+      }
     }
   }
 
   // ── ElevenLabs TTS ─────────────────────────────────────────────────────────
-  async function speakText(text) {
+  async function speakText(text, isOpener = false) {
     setUIState('speaking');
     setStatus('Speaking...');
     let ttsError = false;
 
     try {
-      const res = await fetch('/api/speak', {
+      const res = await fetchWithTimeout('/api/speak', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
-      });
+      }, 25000);
 
       if (!res.ok) throw new Error('TTS failed');
 
@@ -626,7 +642,9 @@
     if (ttsError) {
       // Set after setUIState so the message and class aren't overwritten
       const statusEl = document.getElementById('voice-status');
-      statusEl.textContent = 'CE responded above — audio didn\'t load this time.';
+      statusEl.textContent = isOpener
+        ? 'Audio didn\'t load — read the message above and tap to respond.'
+        : 'CE responded above — audio didn\'t load this time.';
       statusEl.classList.add('error');
     }
   }
