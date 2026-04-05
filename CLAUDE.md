@@ -1,10 +1,10 @@
-# empathybot — Re-Entry File
+# WithYou (empathybot) — Re-Entry File
 *Claude: read this before touching anything.*
 
 ---
 
 ## What This Is
-Empathetic AI voice companion for people going through hard times. User selects a support type (grief, anxiety, trauma, etc.) and speaks freely. CE listens, responds with empathy, and speaks back using text-to-speech. Built on three separate AI services.
+**WithYou** — an AI voice companion for people going through hard times. Product was renamed from "Cognitive Empathies" to WithYou. User selects a support type (grief, anxiety, trauma, etc.) and speaks freely. The companion (named CE) listens, responds with empathy, and speaks back using text-to-speech. Built on three separate AI services.
 
 **Live at:** https://empathy.creativekonsoles.com
 
@@ -170,4 +170,4 @@ Each has: a label, icon, short description (card), a context string injected int
 
 ---
 
-*Last updated: 2026-04-05*
+*Last updated: 2026-04-06 — Renamed to WithYou; CE remains the companion's name*
