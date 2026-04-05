@@ -492,7 +492,7 @@
   async function startListening() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setUIState('idle');
-      setStatus('Voice isn\'t supported in this browser — try Chrome on desktop.');
+      setStatus('Voice isn\'t supported in this browser — try Chrome or Safari on desktop.');
       return;
     }
 
@@ -542,7 +542,6 @@
 
     try {
       // 1. Transcribe
-      setStatus('Listening...');
       const transcribeRes = await fetchWithTimeout('/api/transcribe', { method: 'POST', body: formData }, 20000);
       if (!transcribeRes.ok) {
         setUIState('idle');
