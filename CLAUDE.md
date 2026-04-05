@@ -12,7 +12,16 @@
 > "Re-entry: empathybot"
 
 ## Current Status
-✅ V1 live on Railway — deployed, functional, publicly accessible
+✅ Private alpha baseline — FROZEN as of 2026-04-06
+
+**DO NOT modify without explicit instruction:**
+- BASE_SYSTEM prompt
+- Any SUPPORT_CONTEXT entry
+- Any opener line (getOpener in index.html)
+- Hero copy (eyebrow, h1, subtitle)
+- Brand name (WithYou) or companion name (CE)
+
+Next step is real human QA testing, not more prompt changes.
 
 ---
 
@@ -154,20 +163,30 @@ Each has: a label, icon, short description (card), a context string injected int
 - [x] 12 support types with per-type system prompts and opener lines
 - [x] 2-screen UI: support type select → voice conversation
 - [x] Mic button with animated orb rings (idle / listening / speaking / processing states)
-- [x] Crisis note (988) in fixed footer
-- [x] Restart flow
-- [x] Logo and favicon in `/static`
-- [x] Railway deployment (live at empathy.creativekonsoles.com)
-- [x] AI disclosure and hero copy refinements (2026-04-05)
-- [x] Visible TTS failure fallback (2026-04-05)
+- [x] fetchWithTimeout on all 3 API calls (20s / 15s / 25s)
+- [x] MAX_HISTORY = 20 message cap
+- [x] Safari/iOS mime type detection (audio/mp4 fallback)
+- [x] All error states surface with distinct messages (mic blocked, empty audio, timeout, TTS fail)
+- [x] TTS fallback: shows text + warm pink error when audio fails
+- [x] Crisis note + disclosure merged into single footer line
+- [x] Renamed to WithYou (2026-04-06)
+- [x] Full content quality pass: all 12 card descriptions, opener lines, support contexts (2026-04-06)
+- [x] Transcript realism pass: BASE_SYSTEM explicit phrase bans, clinical vocab bans, behavior-explanation bans (2026-04-06)
+- [x] Live QA over-correction fixes: restraint-announcing ban, "[X] is real" ban, somatic question ban (2026-04-06)
+- [x] Manual QA checklist produced (2026-04-06)
 
 ## What's Next
 
-- [ ] Safari/iOS audio codec fix (MediaRecorder mime type detection)
-- [ ] Session persistence (localStorage or server-side)
+**Before sharing with anyone:**
+- [ ] iPhone Safari: confirm voice record + playback works on a real device
+- [ ] Run Top 10 Must-Test Prompts from QA plan
+- [ ] Confirm TTS fallback shows text correctly when ElevenLabs fails
+
+**After first human feedback:**
+- [ ] Session persistence (localStorage)
 - [ ] V2: subscription/payment layer
 - [ ] V2: more support types (roadmap: 100+)
 
 ---
 
-*Last updated: 2026-04-06 — Renamed to WithYou; CE remains the companion's name*
+*Last updated: 2026-04-06 — Renamed to WithYou; private alpha baseline frozen; QA plan complete*
