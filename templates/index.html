@@ -412,6 +412,7 @@
     messages: [],
     mediaRecorder: null,
     audioChunks: [],
+    mimeType: '',
     isListening: false,
     isSpeaking: false,
     isProcessing: false,
@@ -480,10 +481,21 @@
   }
 
   async function startListening() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setUIState('idle');
+      setStatus('Voice isn\'t supported in this browser — try Chrome on desktop.');
+      return;
+    }
+
+    // Pick the best supported audio format (Safari needs audio/mp4)
+    const preferred = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+    state.mimeType = preferred.find(t => MediaRecorder.isTypeSupported(t)) || '';
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       state.audioChunks = [];
-      state.mediaRecorder = new MediaRecorder(stream);
+      const options = state.mimeType ? { mimeType: state.mimeType } : {};
+      state.mediaRecorder = new MediaRecorder(stream, options);
       state.mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) state.audioChunks.push(e.data);
       };
@@ -492,7 +504,14 @@
       state.isListening = true;
       setUIState('listening');
     } catch (err) {
-      setStatus('Microphone access denied');
+      setUIState('idle');
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setStatus('Mic access is blocked — check your browser settings and try again.');
+      } else if (err.name === 'NotFoundError') {
+        setStatus('No microphone found — please connect one and try again.');
+      } else {
+        setStatus('Couldn\'t reach your microphone — tap to try again.');
+      }
     }
   }
 
@@ -506,18 +525,26 @@
   }
 
   async function processAudio() {
-    const blob = new Blob(state.audioChunks, { type: 'audio/webm' });
+    const mimeType = state.mimeType || 'audio/webm';
+    const ext = mimeType.includes('mp4') ? 'mp4' : mimeType.includes('ogg') ? 'ogg' : 'webm';
+    const blob = new Blob(state.audioChunks, { type: mimeType });
     const formData = new FormData();
-    formData.append('audio', blob, 'recording.webm');
+    formData.append('audio', blob, `recording.${ext}`);
 
     try {
       // 1. Transcribe
       setStatus('Listening...');
       const transcribeRes = await fetch('/api/transcribe', { method: 'POST', body: formData });
+      if (!transcribeRes.ok) {
+        setUIState('idle');
+        setStatus('Couldn\'t transcribe that — tap to try again.');
+        return;
+      }
       const { text: userText } = await transcribeRes.json();
 
       if (!userText || userText.trim() === '') {
         setUIState('idle');
+        setStatus('Didn\'t catch that — tap to try again.');
         return;
       }
 
@@ -535,7 +562,19 @@
           coaching: '',
         }),
       });
+      if (!chatRes.ok) {
+        state.messages.pop(); // remove the user message we just pushed
+        setUIState('idle');
+        setStatus('CE is having trouble right now — tap to try again.');
+        return;
+      }
       const { text: replyText } = await chatRes.json();
+      if (!replyText) {
+        state.messages.pop();
+        setUIState('idle');
+        setStatus('CE is having trouble right now — tap to try again.');
+        return;
+      }
       state.messages.push({ role: 'assistant', content: replyText });
       showReply(replyText);
 
@@ -543,8 +582,8 @@
       await speakText(replyText);
 
     } catch (err) {
-      setStatus('Something went wrong. Tap to try again.');
       setUIState('idle');
+      setStatus('Something went wrong — tap to try again.');
     }
   }
 
@@ -552,6 +591,7 @@
   async function speakText(text) {
     setUIState('speaking');
     setStatus('Speaking...');
+    let ttsError = false;
 
     try {
       const res = await fetch('/api/speak', {
@@ -579,12 +619,16 @@
       URL.revokeObjectURL(audioUrl);
     } catch (err) {
       console.error('TTS error:', err);
-      const statusEl = document.getElementById('voice-status');
-      statusEl.textContent = 'CE responded above — audio didn\'t load this time.';
-      statusEl.className = 'voice-status error';
+      ttsError = true;
     }
 
     setUIState('idle');
+    if (ttsError) {
+      // Set after setUIState so the message and class aren't overwritten
+      const statusEl = document.getElementById('voice-status');
+      statusEl.textContent = 'CE responded above — audio didn\'t load this time.';
+      statusEl.classList.add('error');
+    }
   }
 
   // ── UI helpers ─────────────────────────────────────────────────────────────
