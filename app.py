@@ -20,17 +20,17 @@ ELEVENLABS_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel — warm, calm, clear
 
 # ── Support types ─────────────────────────────────────────────────────────────
 SUPPORT_TYPES = [
-    {"id": "grief",        "label": "Grief & Loss",           "icon": "🕊️",  "desc": "Processing the loss of someone or something dear"},
-    {"id": "illness",      "label": "Chronic Illness",         "icon": "🌿",  "desc": "Living with ongoing health challenges"},
-    {"id": "trauma",       "label": "Trauma Recovery",         "icon": "🛡️",  "desc": "Healing from painful past experiences"},
+    {"id": "grief",        "label": "Grief",                   "icon": "🕊️",  "desc": "When someone or something you loved is gone"},
+    {"id": "illness",      "label": "Chronic Illness",         "icon": "🌿",  "desc": "When your body has become a source of stress"},
+    {"id": "trauma",       "label": "Trauma",                  "icon": "🛡️",  "desc": "When the past still shapes how you feel today"},
     {"id": "anxiety",      "label": "Anxiety & Overwhelm",     "icon": "🌊",  "desc": "When everything feels like too much"},
     {"id": "relationship", "label": "Relationship Pain",       "icon": "💔",  "desc": "Heartbreak, conflict, or disconnection"},
-    {"id": "loneliness",   "label": "Loneliness & Isolation",  "icon": "🌑",  "desc": "Feeling unseen or disconnected from others"},
+    {"id": "loneliness",   "label": "Loneliness",              "icon": "🌑",  "desc": "Feeling unseen or disconnected from others"},
     {"id": "caregiver",    "label": "Caregiver Burnout",       "icon": "🤲",  "desc": "Exhaustion from caring for someone else"},
     {"id": "depression",   "label": "Depression",              "icon": "🌧️",  "desc": "Low mood, emptiness, or loss of meaning"},
     {"id": "transition",   "label": "Life Transitions",        "icon": "🔄",  "desc": "Major change — job, move, identity, purpose"},
-    {"id": "health_fear",  "label": "Medical Fear",            "icon": "🏥",  "desc": "Anxiety around diagnosis, treatment, or prognosis"},
-    {"id": "addiction",    "label": "Addiction & Recovery",    "icon": "🌱",  "desc": "Navigating substance or behavioral struggles"},
+    {"id": "health_fear",  "label": "Medical Anxiety",         "icon": "🏥",  "desc": "When medical news or uncertainty is weighing on you"},
+    {"id": "addiction",    "label": "Addiction & Recovery",    "icon": "🌱",  "desc": "When a habit or substance feels hard to put down"},
     {"id": "self_worth",   "label": "Self-Worth & Shame",      "icon": "🪞",  "desc": "Feeling not enough, broken, or like a burden"},
 ]
 
