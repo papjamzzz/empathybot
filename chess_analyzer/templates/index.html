@@ -32,8 +32,12 @@
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      /* dvh for Chrome/Android; -webkit-fill-available fallback for older iOS Safari */
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
       min-height: 100dvh;
-      padding-bottom: 3rem;
+      padding-bottom: env(safe-area-inset-bottom, 2rem);
+      padding-bottom: max(env(safe-area-inset-bottom), 2rem);
     }
 
     /* ── Header ── */
@@ -41,6 +45,7 @@
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 1rem 1.25rem;
+      padding-top: max(1rem, env(safe-area-inset-top));
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -64,26 +69,45 @@
       background: var(--surface);
       border: 2px dashed var(--border);
       border-radius: 16px;
-      padding: 2.25rem 1.25rem;
+      padding: 2rem 1.25rem 1.5rem;
       text-align: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .upload-area:hover  { border-color: var(--accent); background: var(--accent-glow); }
-    .upload-area input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-      font-size: 0; /* suppress iOS tooltip */
     }
     .upload-icon { font-size: 3rem; margin-bottom: 0.75rem; }
     .upload-area h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
-    .upload-area p  { font-size: 0.82rem; color: var(--muted); }
+    .upload-area > p { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.25rem; }
+
+    /* Two-button row for camera / gallery */
+    .upload-btns {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .upload-btn {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .upload-btn:active { background: var(--accent-glow); border-color: var(--accent); }
+    .upload-btn input[type="file"] {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      font-size: 0;
+    }
+    .upload-btn .btn-icon { font-size: 1.5rem; line-height: 1; pointer-events: none; }
+    .upload-btn .btn-lbl  { font-size: 0.78rem; font-weight: 600; color: var(--text); pointer-events: none; }
 
     /* ── Preview ── */
     #preview-wrap {
@@ -105,14 +129,16 @@
       position: absolute;
       top: 8px; right: 8px;
       background: rgba(15,15,19,0.75);
+      -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 50%;
-      width: 32px; height: 32px;
+      width: 44px; height: 44px; /* 44px minimum touch target per Apple HIG */
       font-size: 1.1rem;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
     }
 
     /* ── Buttons ── */
@@ -120,6 +146,7 @@
       display: block;
       width: 100%;
       padding: 0.9rem 1.25rem;
+      min-height: 44px; /* Apple HIG minimum touch target */
       border: none;
       border-radius: 12px;
       font-size: 1rem;
@@ -127,13 +154,15 @@
       cursor: pointer;
       transition: all 0.15s;
       text-align: center;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-appearance: none;
     }
     .btn-primary {
       background: var(--accent);
       color: #0f0f13;
       margin-top: 1rem;
     }
-    .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+    .btn-primary:active:not(:disabled) { filter: brightness(1.1); }
     .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
     .btn-outline {
       background: transparent;
@@ -141,7 +170,7 @@
       color: var(--text);
       margin-top: 0.75rem;
     }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-outline:active { border-color: var(--accent); color: var(--accent); }
 
     /* ── Loading ── */
     #loading {
@@ -266,6 +295,7 @@
 
     .piece {
       line-height: 1;
+      -webkit-user-select: none;
       user-select: none;
       position: relative;
       z-index: 1;
@@ -277,7 +307,7 @@
     .sq-to-dot::after {
       content: '';
       position: absolute;
-      inset: 22%;
+      top: 22%; right: 22%; bottom: 22%; left: 22%; /* avoid inset shorthand for older Safari */
       border-radius: 50%;
       background: rgba(0,0,0,0.25);
     }
@@ -309,10 +339,23 @@
 
   <!-- Upload -->
   <div class="upload-area" id="upload-area">
-    <input type="file" id="file-input" accept="image/*" capture="environment">
-    <div class="upload-icon">📷</div>
-    <h2>Take a photo of the board</h2>
-    <p>Or tap to choose from your gallery</p>
+    <div class="upload-icon">♟</div>
+    <h2>Photograph your chessboard</h2>
+    <p>Point the camera straight down at the board</p>
+    <div class="upload-btns">
+      <div class="upload-btn">
+        <!-- capture="environment" goes directly to camera on iOS -->
+        <input type="file" id="camera-input" accept="image/*" capture="environment">
+        <span class="btn-icon">📷</span>
+        <span class="btn-lbl">Camera</span>
+      </div>
+      <div class="upload-btn">
+        <!-- no capture: iOS shows action sheet with Photo Library option -->
+        <input type="file" id="gallery-input" accept="image/*">
+        <span class="btn-icon">🖼</span>
+        <span class="btn-lbl">Gallery</span>
+      </div>
+    </div>
   </div>
 
   <!-- Preview -->
@@ -377,25 +420,35 @@
 
   let selectedFile = null;
 
-  const fileInput   = document.getElementById('file-input');
+  const cameraInput = document.getElementById('camera-input');
+  const galleryInput = document.getElementById('gallery-input');
   const previewWrap = document.getElementById('preview-wrap');
   const preview     = document.getElementById('preview');
   const clearBtn    = document.getElementById('clear-btn');
   const analyzeBtn  = document.getElementById('analyze-btn');
   const loading     = document.getElementById('loading');
+  const loadingMsg  = loading.querySelector('p');
   const errorBox    = document.getElementById('error-box');
   const results     = document.getElementById('results');
 
-  fileInput.addEventListener('change', (e) => {
+  function onFileSelected(e) {
     const file = e.target.files[0];
     if (!file) return;
     selectedFile = file;
-    preview.src = URL.createObjectURL(file);
+    // Show preview immediately from the raw file — canvas compression happens at upload time
+    const objUrl = URL.createObjectURL(file);
+    preview.onload = () => URL.revokeObjectURL(objUrl);
+    preview.src = objUrl;
     previewWrap.style.display = 'block';
     analyzeBtn.disabled = false;
     hide(results);
     hide(errorBox);
-  });
+    // Reset the input value so the same file can be re-selected after clearing
+    e.target.value = '';
+  }
+
+  cameraInput.addEventListener('change', onFileSelected);
+  galleryInput.addEventListener('change', onFileSelected);
 
   clearBtn.addEventListener('click', reset);
   document.getElementById('new-btn').addEventListener('click', reset);
@@ -408,10 +461,16 @@
     hide(results);
     hide(errorBox);
 
-    const formData = new FormData();
-    formData.append('image', selectedFile);
-
     try {
+      // Compress + convert to JPEG via canvas.
+      // This handles: HEIC/HEIF from iOS camera roll, oversized photos, any format Safari can decode.
+      loadingMsg.textContent = 'Preparing image…';
+      const compressed = await compressImage(selectedFile);
+
+      loadingMsg.textContent = 'Analyzing board position…';
+      const formData = new FormData();
+      formData.append('image', compressed, 'board.jpg');
+
       const res  = await fetch('/api/analyze', { method: 'POST', body: formData });
       const data = await res.json();
 
@@ -422,9 +481,42 @@
       showError(err.message || 'Something went wrong. Please try again.');
     } finally {
       hide(loading);
+      loadingMsg.textContent = 'Analyzing board position…';
       analyzeBtn.disabled = false;
     }
   });
+
+  /**
+   * Resize to maxDim on the longest side and export as JPEG.
+   * Runs entirely in-browser via Canvas — converts HEIC/HEIF automatically
+   * because Safari decodes those formats before drawing to canvas.
+   */
+  function compressImage(file, maxDim = 1400, quality = 0.88) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const objUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        let { naturalWidth: w, naturalHeight: h } = img;
+        if (w > maxDim || h > maxDim) {
+          if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else        { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(
+          (blob) => resolve(blob || file), // fall back to original if toBlob fails
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => { URL.revokeObjectURL(objUrl); resolve(file); };
+      img.src = objUrl;
+    });
+  }
 
   function renderResults(data) {
     // Turn badge

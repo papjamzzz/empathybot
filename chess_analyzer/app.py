@@ -11,6 +11,9 @@ load_dotenv()
 app = Flask(__name__)
 
 ALLOWED_MEDIA_TYPES = {'image/jpeg', 'image/png', 'image/gif', 'image/webp'}
+# iOS may send HEIC/HEIF from camera roll; canvas compression converts these to JPEG
+# but we remap on the backend too as a safety net
+HEIC_TYPES = {'image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'}
 
 
 def get_client():
@@ -46,8 +49,12 @@ def analyze():
         return jsonify({'error': 'Empty image file'}), 400
 
     image_data = base64.standard_b64encode(image_bytes).decode('utf-8')
-    media_type = file.content_type
-    if not media_type or media_type not in ALLOWED_MEDIA_TYPES:
+    media_type = (file.content_type or '').lower().split(';')[0].strip()
+    if media_type in HEIC_TYPES:
+        # Claude API doesn't accept HEIC; treat as JPEG (canvas should have already converted it,
+        # but if it somehow arrives raw the API call will likely still fail — better than a 500)
+        media_type = 'image/jpeg'
+    if media_type not in ALLOWED_MEDIA_TYPES:
         media_type = 'image/jpeg'
 
     try:
