@@ -32,7 +32,6 @@
       background: var(--bg);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-      /* dvh for Chrome/Android; -webkit-fill-available fallback for older iOS Safari */
       min-height: 100vh;
       min-height: -webkit-fill-available;
       min-height: 100dvh;
@@ -76,11 +75,7 @@
     .upload-area h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
     .upload-area > p { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.25rem; }
 
-    /* Two-button row for camera / gallery */
-    .upload-btns {
-      display: flex;
-      gap: 0.75rem;
-    }
+    .upload-btns { display: flex; gap: 0.75rem; }
     .upload-btn {
       flex: 1;
       position: relative;
@@ -94,7 +89,6 @@
       align-items: center;
       gap: 0.3rem;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
     .upload-btn:active { background: var(--accent-glow); border-color: var(--accent); }
@@ -134,7 +128,7 @@
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 50%;
-      width: 44px; height: 44px; /* 44px minimum touch target per Apple HIG */
+      width: 44px; height: 44px;
       font-size: 1.1rem;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
@@ -146,7 +140,7 @@
       display: block;
       width: 100%;
       padding: 0.9rem 1.25rem;
-      min-height: 44px; /* Apple HIG minimum touch target */
+      min-height: 44px;
       border: none;
       border-radius: 12px;
       font-size: 1rem;
@@ -157,11 +151,7 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-appearance: none;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: #0f0f13;
-      margin-top: 1rem;
-    }
+    .btn-primary { background: var(--accent); color: #0f0f13; margin-top: 1rem; }
     .btn-primary:active:not(:disabled) { filter: brightness(1.1); }
     .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
     .btn-outline {
@@ -173,11 +163,7 @@
     .btn-outline:active { border-color: var(--accent); color: var(--accent); }
 
     /* ── Loading ── */
-    #loading {
-      display: none;
-      text-align: center;
-      padding: 2.5rem 1rem;
-    }
+    #loading { display: none; text-align: center; padding: 2.5rem 1rem; }
     .spinner {
       width: 44px; height: 44px;
       border: 3px solid var(--border);
@@ -206,6 +192,34 @@
     /* ── Results ── */
     #results { display: none; margin-top: 1.5rem; }
 
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 1rem;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 0.55rem;
+      min-height: 44px;
+      border: none;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-appearance: none;
+    }
+    .mode-btn.active { background: var(--accent); color: #0f0f13; }
+
+    /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -224,7 +238,7 @@
     }
     .card-body { padding: 1.25rem; }
 
-    /* Move card */
+    /* Turn badge */
     .turn-badge {
       display: inline-flex;
       align-items: center;
@@ -238,25 +252,62 @@
       font-weight: 600;
       margin-bottom: 0.9rem;
     }
-    .best-move {
+
+    /* Analysis move view */
+    #analysis-view .best-move {
       font-size: 2.75rem;
       font-weight: 800;
       color: var(--accent);
       letter-spacing: -0.03em;
       line-height: 1;
     }
-    .move-squares {
+    #analysis-view .move-squares {
       font-size: 0.82rem;
       color: var(--muted);
       margin-top: 0.35rem;
       font-family: 'SF Mono', 'Fira Code', monospace;
     }
 
-    /* Board */
+    /* Tutorial step view */
+    #tutorial-view { display: none; }
+    #tutorial-view .step-number {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    #tutorial-view .step-instruction {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text);
+    }
+    #tutorial-view .step-notation {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      margin-top: 0.35rem;
+    }
+
+    /* Board — full width, no side padding */
     .board-wrap {
+      padding: 0.75rem 0 0.5rem;
       display: flex;
       justify-content: center;
-      padding: 1rem 0.75rem 0.5rem;
+    }
+    /* Relative container so SVG arrow can overlay the board */
+    .board-svg-wrap {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+    }
+    #board-arrow {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+      display: none;
     }
     .board-outer { display: flex; flex-direction: column; }
     .board-row   { display: flex; align-items: center; }
@@ -286,12 +337,18 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      /* size set by JS */
     }
     .sq-light { background: var(--light-sq); }
-    .sq-dark  { background: var(--dark-sq);  }
+    .sq-dark  { background: var(--dark-sq); }
     .sq-from  { background: var(--from-sq) !important; }
-    .sq-to    { background: var(--to-sq)   !important; }
+    .sq-to    { background: var(--to-sq) !important; }
+
+    /* Pulse the destination square in tutorial mode */
+    @keyframes sq-pulse {
+      0%, 100% { filter: brightness(1); }
+      50%       { filter: brightness(1.25); }
+    }
+    .tutorial-active .sq-to { animation: sq-pulse 1.4s ease-in-out infinite; }
 
     .piece {
       line-height: 1;
@@ -300,14 +357,13 @@
       position: relative;
       z-index: 1;
     }
-    .piece-white { color: #fff;   text-shadow: 0 0 3px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.8); }
-    .piece-black { color: #111;   text-shadow: 0 0 3px rgba(255,255,255,0.4); }
+    .piece-white { color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.9), 0 1px 2px rgba(0,0,0,0.8); }
+    .piece-black { color: #111; text-shadow: 0 0 3px rgba(255,255,255,0.4); }
 
-    /* dot for empty "to" square when no piece there */
     .sq-to-dot::after {
       content: '';
       position: absolute;
-      top: 22%; right: 22%; bottom: 22%; left: 22%; /* avoid inset shorthand for older Safari */
+      top: 22%; right: 22%; bottom: 22%; left: 22%;
       border-radius: 50%;
       background: rgba(0,0,0,0.25);
     }
@@ -344,13 +400,11 @@
     <p>Point the camera straight down at the board</p>
     <div class="upload-btns">
       <div class="upload-btn">
-        <!-- capture="environment" goes directly to camera on iOS -->
         <input type="file" id="camera-input" accept="image/*" capture="environment">
         <span class="btn-icon">📷</span>
         <span class="btn-lbl">Camera</span>
       </div>
       <div class="upload-btn">
-        <!-- no capture: iOS shows action sheet with Photo Library option -->
         <input type="file" id="gallery-input" accept="image/*">
         <span class="btn-icon">🖼</span>
         <span class="btn-lbl">Gallery</span>
@@ -370,7 +424,7 @@
   <!-- Loading -->
   <div id="loading">
     <div class="spinner"></div>
-    <p>Analyzing board position…</p>
+    <p id="loading-msg">Analyzing board position…</p>
     <p class="sub">This takes about 5–10 seconds</p>
   </div>
 
@@ -380,27 +434,58 @@
   <!-- Results -->
   <div id="results">
 
-    <!-- Best move -->
+    <!-- Mode toggle -->
+    <div class="mode-toggle" role="group" aria-label="View mode">
+      <button class="mode-btn active" data-mode="analysis">Analysis</button>
+      <button class="mode-btn" data-mode="tutorial">Tutorial</button>
+    </div>
+
+    <!-- Move card (shared turn badge, switches content by mode) -->
     <div class="card">
-      <div class="card-header">Best Move</div>
+      <div class="card-header" id="move-card-header">Best Move</div>
       <div class="card-body">
         <div class="turn-badge" id="turn-badge"></div>
-        <div class="best-move" id="best-move"></div>
-        <div class="move-squares" id="move-squares"></div>
+
+        <!-- Analysis view -->
+        <div id="analysis-view">
+          <div class="best-move" id="best-move"></div>
+          <div class="move-squares" id="move-squares"></div>
+        </div>
+
+        <!-- Tutorial view -->
+        <div id="tutorial-view">
+          <div class="step-number">Your next move</div>
+          <div class="step-instruction" id="step-instruction"></div>
+          <div class="step-notation" id="step-notation"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Board visualization -->
-    <div class="card">
+    <!-- Full-width board -->
+    <div class="card" id="board-card">
       <div class="card-header">Board Position</div>
       <div class="board-wrap">
-        <div class="board-outer" id="board-outer"></div>
+        <div class="board-svg-wrap" id="board-svg-wrap">
+          <div class="board-outer" id="board-outer"></div>
+          <!-- SVG arrow overlay (tutorial mode only) -->
+          <svg id="board-arrow" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrowhead" markerWidth="6" markerHeight="5"
+                      refX="5.5" refY="2.5" orient="auto">
+                <polygon points="0 0, 6 2.5, 0 5" fill="#b794f4"/>
+              </marker>
+            </defs>
+            <line id="arrow-line"
+                  stroke="#b794f4" stroke-linecap="round" opacity="0.88"
+                  marker-end="url(#arrowhead)"/>
+          </svg>
+        </div>
       </div>
     </div>
 
-    <!-- Analysis -->
+    <!-- Analysis / explanation card -->
     <div class="card">
-      <div class="card-header">Analysis</div>
+      <div class="card-header" id="analysis-header">Analysis</div>
       <div class="card-body">
         <p class="explanation" id="explanation"></p>
         <p class="fen-text" id="fen-display"></p>
@@ -417,25 +502,33 @@
     'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙',
     'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟'
   };
+  const PIECE_NAMES = {
+    'K':'King','Q':'Queen','R':'Rook','B':'Bishop','N':'Knight','P':'Pawn',
+    'k':'King','q':'Queen','r':'Rook','b':'Bishop','n':'Knight','p':'Pawn'
+  };
 
-  let selectedFile = null;
+  let selectedFile  = null;
+  let currentMode   = 'analysis'; // 'analysis' | 'tutorial'
+  let lastData      = null;
+  let lastSqSz      = 40;
 
-  const cameraInput = document.getElementById('camera-input');
+  const cameraInput  = document.getElementById('camera-input');
   const galleryInput = document.getElementById('gallery-input');
-  const previewWrap = document.getElementById('preview-wrap');
-  const preview     = document.getElementById('preview');
-  const clearBtn    = document.getElementById('clear-btn');
-  const analyzeBtn  = document.getElementById('analyze-btn');
-  const loading     = document.getElementById('loading');
-  const loadingMsg  = loading.querySelector('p');
-  const errorBox    = document.getElementById('error-box');
-  const results     = document.getElementById('results');
+  const previewWrap  = document.getElementById('preview-wrap');
+  const preview      = document.getElementById('preview');
+  const clearBtn     = document.getElementById('clear-btn');
+  const analyzeBtn   = document.getElementById('analyze-btn');
+  const loading      = document.getElementById('loading');
+  const loadingMsg   = document.getElementById('loading-msg');
+  const errorBox     = document.getElementById('error-box');
+  const results      = document.getElementById('results');
+
+  // ── File input handlers ──────────────────────────────────────────────────
 
   function onFileSelected(e) {
     const file = e.target.files[0];
     if (!file) return;
     selectedFile = file;
-    // Show preview immediately from the raw file — canvas compression happens at upload time
     const objUrl = URL.createObjectURL(file);
     preview.onload = () => URL.revokeObjectURL(objUrl);
     preview.src = objUrl;
@@ -443,15 +536,50 @@
     analyzeBtn.disabled = false;
     hide(results);
     hide(errorBox);
-    // Reset the input value so the same file can be re-selected after clearing
     e.target.value = '';
   }
 
   cameraInput.addEventListener('change', onFileSelected);
   galleryInput.addEventListener('change', onFileSelected);
-
   clearBtn.addEventListener('click', reset);
   document.getElementById('new-btn').addEventListener('click', reset);
+
+  // ── Mode toggle ──────────────────────────────────────────────────────────
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.mode !== currentMode) setMode(btn.dataset.mode);
+    });
+  });
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+    if (lastData) applyMode(lastData);
+  }
+
+  function applyMode(data) {
+    const isTutorial = currentMode === 'tutorial';
+    const boardCard  = document.getElementById('board-card');
+    const arrow      = document.getElementById('board-arrow');
+    const analysisH  = document.getElementById('analysis-header');
+
+    // Move card content
+    document.getElementById('analysis-view').style.display = isTutorial ? 'none' : 'block';
+    document.getElementById('tutorial-view').style.display = isTutorial ? 'block' : 'none';
+    document.getElementById('move-card-header').textContent = isTutorial ? 'Your Move' : 'Best Move';
+
+    // Board: pulse animation class + arrow
+    boardCard.classList.toggle('tutorial-active', isTutorial);
+    arrow.style.display = (isTutorial && data.from && data.to) ? 'block' : 'none';
+
+    // Explanation header
+    analysisH.textContent = isTutorial ? 'Why this works' : 'Analysis';
+  }
+
+  // ── Analyze ──────────────────────────────────────────────────────────────
 
   analyzeBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
@@ -462,8 +590,6 @@
     hide(errorBox);
 
     try {
-      // Compress + convert to JPEG via canvas.
-      // This handles: HEIC/HEIF from iOS camera roll, oversized photos, any format Safari can decode.
       loadingMsg.textContent = 'Preparing image…';
       const compressed = await compressImage(selectedFile);
 
@@ -486,69 +612,60 @@
     }
   });
 
-  /**
-   * Resize to maxDim on the longest side and export as JPEG.
-   * Runs entirely in-browser via Canvas — converts HEIC/HEIF automatically
-   * because Safari decodes those formats before drawing to canvas.
-   */
-  function compressImage(file, maxDim = 1400, quality = 0.88) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      const objUrl = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(objUrl);
-        let { naturalWidth: w, naturalHeight: h } = img;
-        if (w > maxDim || h > maxDim) {
-          if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
-          else        { w = Math.round(w * maxDim / h); h = maxDim; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width  = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        canvas.toBlob(
-          (blob) => resolve(blob || file), // fall back to original if toBlob fails
-          'image/jpeg',
-          quality
-        );
-      };
-      img.onerror = () => { URL.revokeObjectURL(objUrl); resolve(file); };
-      img.src = objUrl;
-    });
-  }
+  // ── Render ───────────────────────────────────────────────────────────────
 
   function renderResults(data) {
-    // Turn badge
+    lastData = data;
+
     const isWhite = (data.turn || 'white') === 'white';
-    const badge = document.getElementById('turn-badge');
-    badge.textContent = `${isWhite ? '♔' : '♚'} ${isWhite ? 'White' : 'Black'} to move`;
 
-    // Best move
+    // Turn badge
+    document.getElementById('turn-badge').textContent =
+      `${isWhite ? '♔' : '♚'} ${isWhite ? 'White' : 'Black'} to move`;
+
+    // Analysis view
     document.getElementById('best-move').textContent = data.move;
-    const sq = document.getElementById('move-squares');
-    sq.textContent = (data.from && data.to) ? `${data.from.toUpperCase()} → ${data.to.toUpperCase()}` : '';
+    document.getElementById('move-squares').textContent =
+      (data.from && data.to) ? `${data.from.toUpperCase()} → ${data.to.toUpperCase()}` : '';
 
-    // Board
-    renderBoard(data.fen, data.from, data.to);
+    // Tutorial view
+    const pieceName = getPieceName(data.fen, data.from);
+    document.getElementById('step-instruction').textContent =
+      `Move your ${pieceName} to ${data.to ? data.to.toUpperCase() : data.move}`;
+    document.getElementById('step-notation').textContent =
+      (data.from && data.to)
+        ? `${data.from.toUpperCase()} → ${data.to.toUpperCase()} · ${data.move}`
+        : data.move;
 
-    // Explanation + FEN
+    // Explanation
     document.getElementById('explanation').textContent = data.explanation;
     document.getElementById('fen-display').textContent = 'FEN: ' + data.fen;
+
+    // Board
+    const sqSz = calcSqSz();
+    lastSqSz = sqSz;
+    renderBoard(data.fen, data.from, data.to, sqSz);
+    updateArrow(data.from, data.to, sqSz);
+
+    // Apply current mode visuals
+    applyMode(data);
 
     show(results);
     results.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function renderBoard(fen, fromSq, toSq) {
+  function calcSqSz() {
+    // Fill the card width: container is capped at 480px, padding 1.25rem each side
+    const containerW = Math.min(window.innerWidth, 480) - 40;
+    // 18px rank label + 8 squares; subtract a little breathing room
+    return Math.floor((containerW - 18 - 4) / 8);
+  }
+
+  function renderBoard(fen, fromSq, toSq, sqSz) {
     const rows    = parseFen(fen);
     const fromIdx = sqToIdx(fromSq);
     const toIdx   = sqToIdx(toSq);
-
-    // Responsive square size
-    const maxW = Math.min(window.innerWidth - 80, 360);
-    const sqSz = Math.floor(maxW / 8);
-    const pxSz = sqSz + 'px';
+    const pxSz    = sqSz + 'px';
 
     const outer = document.getElementById('board-outer');
     outer.innerHTML = '';
@@ -601,19 +718,64 @@
       fileRow.appendChild(lbl);
     }
     outer.appendChild(fileRow);
+
+    // Size the SVG overlay to match the board grid (not the file labels)
+    const svgW = 18 + 8 * sqSz;
+    const svgH = 8 * sqSz;
+    const arrow = document.getElementById('board-arrow');
+    arrow.setAttribute('width',  svgW);
+    arrow.setAttribute('height', svgH);
+  }
+
+  function updateArrow(fromSq, toSq, sqSz) {
+    const fromIdx = sqToIdx(fromSq);
+    const toIdx   = sqToIdx(toSq);
+    if (!fromIdx || !toIdx) return;
+
+    const RANK_W = 18;
+    const cx = (idx) => RANK_W + idx.f * sqSz + sqSz / 2;
+    const cy = (idx) => idx.r * sqSz + sqSz / 2;
+
+    const x1 = cx(fromIdx), y1 = cy(fromIdx);
+    const x2 = cx(toIdx),   y2 = cy(toIdx);
+
+    // Shorten end so arrowhead tip lands at edge of destination square
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const pullBack = sqSz * 0.28;
+    const ex = x2 - (dx / len) * pullBack;
+    const ey = y2 - (dy / len) * pullBack;
+
+    // Shorten start slightly too so it doesn't overlap the piece
+    const startPush = sqSz * 0.28;
+    const sx = x1 + (dx / len) * startPush;
+    const sy = y1 + (dy / len) * startPush;
+
+    const line = document.getElementById('arrow-line');
+    line.setAttribute('x1', sx.toFixed(1));
+    line.setAttribute('y1', sy.toFixed(1));
+    line.setAttribute('x2', ex.toFixed(1));
+    line.setAttribute('y2', ey.toFixed(1));
+    line.setAttribute('stroke-width', Math.max(4, Math.round(sqSz * 0.16)));
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  function getPieceName(fen, sq) {
+    if (!sq) return 'piece';
+    const board = parseFen(fen);
+    const idx   = sqToIdx(sq);
+    if (!idx) return 'piece';
+    return PIECE_NAMES[board[idx.r][idx.f]] || 'piece';
   }
 
   function parseFen(fen) {
     const grid = [];
-    const position = fen.split(' ')[0];
-    for (const rowStr of position.split('/')) {
+    for (const rowStr of fen.split(' ')[0].split('/')) {
       const rank = [];
       for (const ch of rowStr) {
-        if (/\d/.test(ch)) {
-          for (let i = 0; i < parseInt(ch); i++) rank.push('');
-        } else {
-          rank.push(ch);
-        }
+        if (/\d/.test(ch)) for (let i = 0; i < parseInt(ch); i++) rank.push('');
+        else rank.push(ch);
       }
       grid.push(rank);
     }
@@ -628,6 +790,31 @@
     return { r, f };
   }
 
+  /**
+   * Resize to maxDim on longest side and export as JPEG via Canvas.
+   * Automatically converts HEIC/HEIF (Safari decodes them before canvas draw).
+   */
+  function compressImage(file, maxDim = 1400, quality = 0.88) {
+    return new Promise((resolve) => {
+      const img    = new Image();
+      const objUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objUrl);
+        let { naturalWidth: w, naturalHeight: h } = img;
+        if (w > maxDim || h > maxDim) {
+          if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else        { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => resolve(blob || file), 'image/jpeg', quality);
+      };
+      img.onerror = () => { URL.revokeObjectURL(objUrl); resolve(file); };
+      img.src = objUrl;
+    });
+  }
+
   function show(el) { el.style.display = 'block'; }
   function hide(el) { el.style.display = 'none'; }
 
@@ -638,10 +825,12 @@
 
   function reset() {
     selectedFile = null;
+    lastData = null;
     preview.src = '';
     previewWrap.style.display = 'none';
     analyzeBtn.disabled = true;
-    fileInput.value = '';
+    cameraInput.value  = '';
+    galleryInput.value = '';
     hide(results);
     hide(errorBox);
     window.scrollTo({ top: 0, behavior: 'smooth' });
